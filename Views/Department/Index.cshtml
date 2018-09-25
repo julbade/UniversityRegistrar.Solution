@@ -1,0 +1,21 @@
+@{
+  Layout = "_Layout";
+}
+<div class="container">
+<h1>Departments</h1>
+<hr />
+<h2>Departments:</h2>
+@if (@Model.Count != 0)
+{
+  <ol>
+    @foreach (var department in @Model)
+    {
+      <li><a href="/departments/@department.GetId()">@department.GetName()</a> <br> <a href="/departments/@department.GetId()/update">Edit</a> | <a href="/departments/@department.GetId()/delete">Delete</a> </li>
+    }
+  </ol>
+}
+<h4><a href="/departments/new">Add a new department</a></h4>
+<h4><a href="/students">Show Students</a></h4>
+<h4><a href="/courses">Show Courses</a></h4>
+
+</div>

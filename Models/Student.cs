@@ -271,6 +271,85 @@ namespace UniversityRegistrar.Models
       }
       return courses;
     }
+
+    public void AddDepartment(Department newDepartment)
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"INSERT INTO departments_students (department_id, student_id) VALUES (@DepartmentId, @StudentId);";
+
+      MySqlParameter department_id = new MySqlParameter();
+      department_id.ParameterName = "@DepartmentId";
+      department_id.Value = newDepartment.GetId();
+      cmd.Parameters.Add(department_id);
+
+      MySqlParameter student_id = new MySqlParameter();
+      student_id.ParameterName = "@StudentId";
+      student_id.Value = _id;
+      cmd.Parameters.Add(student_id);
+
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
+
+
+    public List<Department> GetDepartments()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT department_id FROM departments_students WHERE student_id = @studentId;";
+
+      MySqlParameter studentIdParameter = new MySqlParameter();
+      studentIdParameter.ParameterName = "@studentId";
+      studentIdParameter.Value = _id;
+      cmd.Parameters.Add(studentIdParameter);
+
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+
+      List<int> departmentIds = new List<int> {};
+      while(rdr.Read())
+      {
+        int departmentId = rdr.GetInt32(0);
+        departmentIds.Add(departmentId);
+      }
+      rdr.Dispose();
+
+      List<Department> departments = new List<Department> {};
+      foreach (int departmentId in departmentIds)
+      {
+        var departmentQuery = conn.CreateCommand() as MySqlCommand;
+        departmentQuery.CommandText = @"SELECT * FROM departments WHERE id = @DepartmentId;";
+
+        MySqlParameter departmentIdParameter = new MySqlParameter();
+        departmentIdParameter.ParameterName = "@DepartmentId";
+        departmentIdParameter.Value = departmentId;
+        departmentQuery.Parameters.Add(departmentIdParameter);
+
+        var departmentQueryRdr = departmentQuery.ExecuteReader() as MySqlDataReader;
+        while(departmentQueryRdr.Read())
+        {
+          int thisDepartmentId = departmentQueryRdr.GetInt32(0);
+          string departmentName = departmentQueryRdr.GetString(1);
+
+          Department foundDepartment = new Department(departmentName, thisDepartmentId);
+          departments.Add(foundDepartment);
+        }
+        departmentQueryRdr.Dispose();
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return departments;
+    }
+
     public void Edit(string newName, DateTime newEnrollment)
     {
       MySqlConnection conn = DB.Connection();

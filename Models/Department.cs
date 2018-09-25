@@ -4,27 +4,26 @@ using System;
 
 namespace UniversityRegistrar.Models
 {
-  public class Course
+  public class Department
   {
     private string _name;
     private int _id;
-    private string _number;
-    public Course(string name, string number, int id = 0)
+    public Department(string name, int id = 0)
     {
       _name = name;
       _id = id;
-      _number = number;
     }
-    public override bool Equals(System.Object otherCourse)
+
+    public override bool Equals(System.Object otherDepartment)
     {
-      if (!(otherCourse is Course))
+      if (!(otherDepartment is Department))
       {
         return false;
       }
       else
       {
-        Course newCourse = (Course) otherCourse;
-        return this.GetId().Equals(newCourse.GetId());
+        Department newDepartment = (Department) otherDepartment;
+        return this.GetId().Equals(newDepartment.GetId());
       }
     }
     public override int GetHashCode()
@@ -39,27 +38,22 @@ namespace UniversityRegistrar.Models
     {
       return _id;
     }
-    public string GetNumber()
-    {
-      return _number;
-    }
+
+
     public void Save()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO courses (name, number) VALUES (@name, @number);";
+      cmd.CommandText = @"INSERT INTO departments (name) VALUES (@name);";
 
       MySqlParameter newName = new MySqlParameter();
       newName.ParameterName = "@name";
       newName.Value = this.GetName();
       cmd.Parameters.Add(newName);
 
-      MySqlParameter newNumber = new MySqlParameter();
-      newNumber.ParameterName = "@number";
-      newNumber.Value = this.GetNumber();
-      cmd.Parameters.Add(newNumber);
+
 
       cmd.ExecuteNonQuery();
       _id = (int) cmd.LastInsertedId;
@@ -70,35 +64,35 @@ namespace UniversityRegistrar.Models
       }
 
     }
-    public static List<Course> GetAll()
+    public static List<Department> GetAll()
     {
-      List<Course> allCourses = new List<Course> {};
+      List<Department> allDepartments = new List<Department> {};
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM courses;";
+      cmd.CommandText = @"SELECT * FROM departments;";
       var rdr = cmd.ExecuteReader() as MySqlDataReader;
       while(rdr.Read())
       {
-        int CourseId = rdr.GetInt32(0);
-        string CourseName = rdr.GetString(1);
-        string CourseNumber = rdr.GetString(2);
-        Course newCourse = new Course(CourseName, CourseNumber, CourseId);
-        allCourses.Add(newCourse);
+        int DepartmentId = rdr.GetInt32(0);
+        string DepartmentName = rdr.GetString(1);
+
+        Department newDepartment = new Department(DepartmentName, DepartmentId);
+        allDepartments.Add(newDepartment);
       }
       conn.Close();
       if (conn != null)
       {
         conn.Dispose();
       }
-      return allCourses;
+      return allDepartments;
     }
-    public static Course Find(int id)
+    public static Department Find(int id)
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM courses WHERE id = (@searchId);";
+      cmd.CommandText = @"SELECT * FROM departments WHERE id = (@searchId);";
 
       MySqlParameter searchId = new MySqlParameter();
       searchId.ParameterName = "@searchId";
@@ -106,30 +100,28 @@ namespace UniversityRegistrar.Models
       cmd.Parameters.Add(searchId);
 
       var rdr = cmd.ExecuteReader() as MySqlDataReader;
-      int CourseId = 0;
-      string CourseName = "";
-      string CourseNumber = "";
+      int DepartmentId = 0;
+      string DepartmentName = "";
 
       while(rdr.Read())
       {
-        CourseId = rdr.GetInt32(0);
-        CourseName = rdr.GetString(1);
-        CourseNumber = rdr.GetString(2);
+        DepartmentId = rdr.GetInt32(0);
+        DepartmentName = rdr.GetString(1);
       }
-      Course newCourse = new Course(CourseName, CourseNumber, CourseId);
+      Department newDepartment = new Department(DepartmentName, DepartmentId);
       conn.Close();
       if (conn != null)
       {
         conn.Dispose();
       }
-      return newCourse;
+      return newDepartment;
     }
     public static void DeleteAll()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"DELETE FROM courses;";
+      cmd.CommandText = @"DELETE FROM departments;";
       cmd.ExecuteNonQuery();
       conn.Close();
       if (conn != null)
@@ -142,9 +134,9 @@ namespace UniversityRegistrar.Models
       MySqlConnection conn = DB.Connection();
       conn.Open();
 
-      MySqlCommand cmd = new MySqlCommand("DELETE FROM courses WHERE id = @CourseId; DELETE FROM courses_students WHERE course_id = @CourseId;", conn);
+      MySqlCommand cmd = new MySqlCommand("DELETE FROM departments WHERE id = @DepartmentId; DELETE FROM departments_students WHERE course_id = @DepartmentId;", conn);
       MySqlParameter courseIdParameter = new MySqlParameter();
-      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.ParameterName = "@DepartmentId";
       courseIdParameter.Value = this.GetId();
 
       cmd.Parameters.Add(courseIdParameter);
@@ -155,13 +147,12 @@ namespace UniversityRegistrar.Models
         conn.Close();
       }
     }
-
-    public void Edit(string newName, string newNumber)
+    public void Edit(string newName)
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"UPDATE courses SET name = @newName, number = @newNumber WHERE id = @searchId;";
+      cmd.CommandText = @"UPDATE departments SET name = @newName WHERE id = @searchId;";
 
       MySqlParameter searchId = new MySqlParameter();
       searchId.ParameterName = "@searchId";
@@ -173,14 +164,9 @@ namespace UniversityRegistrar.Models
       name.Value = newName;
       cmd.Parameters.Add(name);
 
-      MySqlParameter number = new MySqlParameter();
-      number.ParameterName = "@newNumber";
-      number.Value = newNumber;
-      cmd.Parameters.Add(number);
-
       cmd.ExecuteNonQuery();
       _name = newName;
-      _number =newNumber;
+
 
       conn.Close();
 
@@ -189,12 +175,12 @@ namespace UniversityRegistrar.Models
         conn.Dispose();
       }
     }
-    public void UpdateCourse(string newCourse)
+    public void UpdateDepartment(string newDepartment)
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"UPDATE courses SET name = @newCourse WHERE id = @searchId;";
+      cmd.CommandText = @"UPDATE departments SET name = @newDepartment WHERE id = @searchId;";
 
       MySqlParameter searchId = new MySqlParameter();
       searchId.ParameterName = "@searchId";
@@ -202,12 +188,12 @@ namespace UniversityRegistrar.Models
       cmd.Parameters.Add(searchId);
 
       MySqlParameter name = new MySqlParameter();
-      name.ParameterName = "@newCourse";
-      name.Value = newCourse;
+      name.ParameterName = "@newDepartment";
+      name.Value = newDepartment;
       cmd.Parameters.Add(name);
 
       cmd.ExecuteNonQuery();
-      _name = newCourse;
+      _name = newDepartment;
       conn.Close();
       if (conn != null)
       {
@@ -221,12 +207,12 @@ namespace UniversityRegistrar.Models
             MySqlConnection conn = DB.Connection();
             conn.Open();
             var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"INSERT INTO courses_students (course_id, student_id) VALUES (@CourseId, @StudentId);";
+            cmd.CommandText = @"INSERT INTO departments_students (department_id, student_id) VALUES (@DepartmentId, @StudentId);";
 
-            MySqlParameter course_id = new MySqlParameter();
-            course_id.ParameterName = "@CourseId";
-            course_id.Value = _id;
-            cmd.Parameters.Add(course_id);
+            MySqlParameter department_id = new MySqlParameter();
+            department_id.ParameterName = "@DepartmentId";
+            department_id.Value = _id;
+            cmd.Parameters.Add(department_id);
 
             MySqlParameter student_id = new MySqlParameter();
             student_id.ParameterName = "@StudentId";
@@ -245,15 +231,15 @@ namespace UniversityRegistrar.Models
           MySqlConnection conn = DB.Connection();
           conn.Open();
           MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-          cmd.CommandText = @"SELECT students.* FROM courses
-          JOIN courses_students ON (courses.id = courses_students.course_id)
-          JOIN students ON (courses_students.student_id = students.id)
-          WHERE courses.id = @CourseId;";
+          cmd.CommandText = @"SELECT students.* FROM departments
+          JOIN departments_students ON (departments.id = departments_students.department_id)
+          JOIN students ON (departments_students.student_id = students.id)
+          WHERE departments.id = @DepartmentId;";
 
-          MySqlParameter courseIdParameter = new MySqlParameter();
-          courseIdParameter.ParameterName = "@CourseId";
-          courseIdParameter.Value = _id;
-          cmd.Parameters.Add(courseIdParameter);
+          MySqlParameter departmentIdParameter = new MySqlParameter();
+          departmentIdParameter.ParameterName = "@DepartmentId";
+          departmentIdParameter.Value = _id;
+          cmd.Parameters.Add(departmentIdParameter);
 
           MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
           List<Student> students = new List<Student>{};
@@ -275,23 +261,22 @@ namespace UniversityRegistrar.Models
           }
           return students;
         }
-
-        public void AddDepartment(Department newDepartment)
+        public void AddCourse(Course newCourse)
         {
           MySqlConnection conn = DB.Connection();
           conn.Open();
           var cmd = conn.CreateCommand() as MySqlCommand;
-          cmd.CommandText = @"INSERT INTO departments_courses (department_id, course_id) VALUES (@DepartmentId, @CourseId);";
-
-          MySqlParameter department_id = new MySqlParameter();
-          department_id.ParameterName = "@DepartmentId";
-          department_id.Value = newDepartment.GetId();
-          cmd.Parameters.Add(department_id);
+          cmd.CommandText = @"INSERT INTO departments_courses (course_id, department_id) VALUES (@CourseId, @DepartmentId);";
 
           MySqlParameter course_id = new MySqlParameter();
           course_id.ParameterName = "@CourseId";
-          course_id.Value = _id;
+          course_id.Value = newCourse.GetId();
           cmd.Parameters.Add(course_id);
+
+          MySqlParameter department_id = new MySqlParameter();
+          department_id.ParameterName = "@DepartmentId";
+          department_id.Value = _id;
+          cmd.Parameters.Add(department_id);
 
           cmd.ExecuteNonQuery();
           conn.Close();
@@ -300,58 +285,57 @@ namespace UniversityRegistrar.Models
             conn.Dispose();
           }
         }
-
-
-        public List<Department> GetDepartments()
+        public List<Course> GetCourses()
         {
           MySqlConnection conn = DB.Connection();
           conn.Open();
           var cmd = conn.CreateCommand() as MySqlCommand;
-          cmd.CommandText = @"SELECT department_id FROM departments_courses WHERE course_id = @courseId;";
+          cmd.CommandText = @"SELECT course_id FROM departments_courses WHERE department_id = @departmentId;";
 
-          MySqlParameter courseIdParameter = new MySqlParameter();
-          courseIdParameter.ParameterName = "@courseId";
-          courseIdParameter.Value = _id;
-          cmd.Parameters.Add(courseIdParameter);
+          MySqlParameter departmentIdParameter = new MySqlParameter();
+          departmentIdParameter.ParameterName = "@departmentId";
+          departmentIdParameter.Value = _id;
+          cmd.Parameters.Add(departmentIdParameter);
 
           var rdr = cmd.ExecuteReader() as MySqlDataReader;
 
-          List<int> departmentIds = new List<int> {};
+          List<int> courseIds = new List<int> {};
           while(rdr.Read())
           {
-            int departmentId = rdr.GetInt32(0);
-            departmentIds.Add(departmentId);
+            int courseId = rdr.GetInt32(0);
+            courseIds.Add(courseId);
           }
           rdr.Dispose();
 
-          List<Department> departments = new List<Department> {};
-          foreach (int departmentId in departmentIds)
+          List<Course> courses = new List<Course> {};
+          foreach (int courseId in courseIds)
           {
-            var departmentQuery = conn.CreateCommand() as MySqlCommand;
-            departmentQuery.CommandText = @"SELECT * FROM departments WHERE id = @DepartmentId;";
+            var courseQuery = conn.CreateCommand() as MySqlCommand;
+            courseQuery.CommandText = @"SELECT * FROM courses WHERE id = @CourseId;";
 
-            MySqlParameter departmentIdParameter = new MySqlParameter();
-            departmentIdParameter.ParameterName = "@DepartmentId";
-            departmentIdParameter.Value = departmentId;
-            departmentQuery.Parameters.Add(departmentIdParameter);
+            MySqlParameter courseIdParameter = new MySqlParameter();
+            courseIdParameter.ParameterName = "@CourseId";
+            courseIdParameter.Value = courseId;
+            courseQuery.Parameters.Add(courseIdParameter);
 
-            var departmentQueryRdr = departmentQuery.ExecuteReader() as MySqlDataReader;
-            while(departmentQueryRdr.Read())
+            var courseQueryRdr = courseQuery.ExecuteReader() as MySqlDataReader;
+            while(courseQueryRdr.Read())
             {
-              int thisDepartmentId = departmentQueryRdr.GetInt32(0);
-              string departmentName = departmentQueryRdr.GetString(1);
-
-              Department foundDepartment = new Department(departmentName, thisDepartmentId);
-              departments.Add(foundDepartment);
+              int thisCourseId = courseQueryRdr.GetInt32(0);
+              string courseName = courseQueryRdr.GetString(1);
+              string courseNumber = courseQueryRdr.GetString(2);
+              Course foundCourse = new Course(courseName, courseNumber, thisCourseId);
+              courses.Add(foundCourse);
             }
-            departmentQueryRdr.Dispose();
+            courseQueryRdr.Dispose();
           }
           conn.Close();
           if (conn != null)
           {
             conn.Dispose();
           }
-          return departments;
+          return courses;
         }
+
       }
   }

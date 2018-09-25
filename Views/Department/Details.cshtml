@@ -1,0 +1,63 @@
+@using UniversityRegistrar.Models;
+@{
+Layout = "_Layout";
+}
+<h1>Departments</h1>
+<h2>Department: @Model["selectedDepartment"].GetName()</h2>
+<hr />
+
+<h1>Students in this department</h1>
+@if (@Model["departmentStudents"].Count != 0)
+{
+  <h4>Here are all the students in this department:</h4>
+  <ul>
+    @foreach (var student in @Model["departmentStudents"])
+    {
+      <li>@student.GetName()</li>
+    }
+  </ul>
+}
+
+
+<h1>Courses in this department</h1>
+@if (@Model["departmentCourses"].Count != 0)
+{
+  <h4>Here are all the courses in this department:</h4>
+  <ul>
+    @foreach (var course in @Model["departmentCourses"])
+    {
+      <li>@course.GetName()</li>
+    }
+  </ul>
+}
+
+
+<h4>Add a student to this department:</h4>
+<form action='/departments/@Model["selectedDepartment"].GetId()/students/new' method='post'>
+  <label for='student-id'>Select a student</label>
+  <select id='student-id' name='student-id' type='text'>
+    @foreach (var student in @Model["allStudents"])
+    {
+      <option value='@student.GetId()'>@student.GetName()</option>
+    }
+  </select>
+  <button type='submit'>Add</button>
+</form>
+
+<h4>Add a course to this department:</h4>
+<form action='/departments/@Model["selectedDepartment"].GetId()/courses/new' method='post'>
+  <label for='course-id'>Select a course</label>
+  <select id='course-id' name='course-id' type='text'>
+    @foreach (var course in @Model["allCourses"])
+    {
+      <option value='@course.GetId()'>@course.GetName() | @course.GetNumber()</option>
+    }
+
+  </select>
+  <button type='submit'>Add</button>
+</form>
+
+
+<p><a href="/students/">Return to Department List</a></p>
+<p><a href="/students/@Model["selectedDepartment"].GetId()/update">Edit Department</a></p>
+<p><a href="/students/@Model["selectedDepartment"].GetId()/delete">Delete Department</a></p>

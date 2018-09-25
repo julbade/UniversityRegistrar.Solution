@@ -9721,16 +9721,16 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/Guest/Desktop/UniversityRegistrar.Solution/UniversityRegistrar/UniversityRegistrar.csproj",
+      "projectUniqueName": "/Users/Guest/Desktop/UniversityRegistrar.Solution/UniversityRegistrar.csproj",
       "projectName": "UniversityRegistrar",
-      "projectPath": "/Users/Guest/Desktop/UniversityRegistrar.Solution/UniversityRegistrar/UniversityRegistrar.csproj",
-      "outputPath": "/Users/Guest/Desktop/UniversityRegistrar.Solution/UniversityRegistrar/obj/",
+      "projectPath": "/Users/Guest/Desktop/UniversityRegistrar.Solution/UniversityRegistrar.csproj",
+      "outputPath": "/Users/Guest/Desktop/UniversityRegistrar.Solution/obj/",
       "projectStyle": "PackageReference",
       "originalTargetFrameworks": [
         "netcoreapp1.0.4"
       ],
       "files": {
-        "lib/netcoreapp1.0.4/UniversityRegistrar.dll": "/Users/Guest/Desktop/UniversityRegistrar.Solution/UniversityRegistrar/bin/placeholder/netcoreapp1.0.4/UniversityRegistrar.dll"
+        "lib/netcoreapp1.0.4/UniversityRegistrar.dll": "/Users/Guest/Desktop/UniversityRegistrar.Solution/bin/placeholder/netcoreapp1.0.4/UniversityRegistrar.dll"
       },
       "frameworks": {
         "netcoreapp1.0.4": {
