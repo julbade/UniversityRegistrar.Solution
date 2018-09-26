@@ -3,7 +3,7 @@
 Layout = "_Layout";
 }
 <h1>Courses</h1>
-<h2>Course: @Model["selectedCourse"].GetName()</h2> | <h2>Course: @Model["selectedCourse"].GetNumber()</h2>
+<h3>Course: @Model["selectedCourse"].GetName()</h3> | <h3>Course: @Model["selectedCourse"].GetNumber()</h3>
 <hr />
 @if (@Model["courseStudents"].Count != 0)
 {
@@ -27,6 +27,6 @@ Layout = "_Layout";
   <button type='submit'>Add</button>
 </form>
 
-<p><a href="/students/">Return to Course List</a></p>
+<p><a href="/courses/">Return to Course List</a></p>
 <p><a href="/students/@Model["selectedCourse"].GetId()/update">Edit Course</a></p>
 <p><a href="/students/@Model["selectedCourse"].GetId()/delete">Delete Course</a></p>

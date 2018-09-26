@@ -60,7 +60,7 @@ namespace UniversityRegistrar.Controllers
     public ActionResult UpdateForm(int courseId)
     {
        Course thisCourse = Course.Find(courseId);
-       return View("update", thisCourse);
+       return View(thisCourse);
     }
 
     [HttpPost("/courses/{courseId}/update")]
