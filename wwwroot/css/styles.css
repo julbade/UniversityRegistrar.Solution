@@ -1,0 +1,22 @@
+.navbar {
+    overflow: hidden;
+    background-color: blue;
+    font-family: 'Autour One';
+    font-size: 20px
+}
+
+.navbar a {
+    float: left;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background-color: red;
+}
+body {
+  background: #e6e6e6;
+}
